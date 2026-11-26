@@ -14,7 +14,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <style>
-        /* [All your existing CSS remains exactly the same] */
         * {
             margin: 0;
             padding: 0;
@@ -38,7 +37,6 @@
             position: relative;
         }
 
-        /* Main content area - vertical split */
         .content-area {
             flex: 1;
             display: flex;
@@ -56,7 +54,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Resizer */
         .resizer {
             height: 8px;
             background: #252526;
@@ -86,7 +83,6 @@
             transform: rotate(90deg);
         }
 
-        /* Comments container - bottom */
         #commentsContainer {
             flex: 0 0 300px;
             min-height: 100px;
@@ -112,7 +108,6 @@
             background: #1e1e1e;
         }
 
-        /* Floating icon toolbar */
         .icon-toolbar {
             position: fixed;
             top: 9px;
@@ -157,14 +152,12 @@
             border-color: #1177bb;
         }
 
-        /* Play button - green when active */
         .icon-btn.play-active {
             background: #2ea043;
             color: white;
             border-color: #3fb950;
         }
 
-        /* Right panel - AI Assistant */
         .panel {
             width: 85vw;
             max-width: 400px;
@@ -259,7 +252,6 @@
             }
         }
 
-        /* Script line styles */
         .script-line {
             display: flex;
             font-family: 'Monaco', 'Menlo', monospace;
@@ -289,7 +281,6 @@
             color: #ffffff;
         }
 
-        /* Toast notifications */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -306,7 +297,6 @@
             white-space: nowrap;
         }
 
-        /* Loading indicator */
         .loading-progress {
             position: fixed;
             top: 50%;
@@ -337,7 +327,6 @@
             transition: width 0.2s;
         }
 
-        /* Popup Overlay */
         .popup-overlay {
             position: fixed;
             top: 0;
@@ -516,7 +505,6 @@
             margin-right: 8px;
         }
 
-        /* iPhone SE optimization */
         @media only screen and (max-width: 375px) and (max-height: 667px) {
             .icon-btn {
                 width: 44px;
@@ -547,26 +535,21 @@
 
 <body>
     <div class="main-wrapper">
-        <!-- Main content area with vertical split -->
         <div class="content-area">
             <div id="script-container"></div>
 
-            <!-- Draggable Resizer -->
             <div class="resizer" id="resizer" title="Drag to resize">
                 <span>⋮⋮⋮</span>
             </div>
 
-            <!-- Comments Container (Bottom) -->
             <div id="commentsContainer" class="hidden">
                 <div id="comments"></div>
             </div>
         </div>
 
-        <!-- Right Panel (AI Assistant) -->
         <div id="rightPanel" class="panel hidden"></div>
     </div>
 
-    <!-- Floating icon toolbar -->
     <div class="icon-toolbar">
         <button class="icon-btn" id="playBtn" title="Deploy options">▶️</button>
         <button class="icon-btn" id="copyBtn" title="Copy with line numbers">📋</button>
@@ -596,7 +579,6 @@
         <div id="progressText">0%</div>
     </div>
 
-    <!-- App Info Popup -->
     <div class="popup-overlay" id="appInfoPopupOverlay">
         <div class="popup-content" style="max-width: 450px;">
             <div class="popup-header">
@@ -666,7 +648,6 @@
         </div>
     </div>
 
-    <!-- Popup Overlay -->
     <div class="popup-overlay" id="popupOverlay">
         <div class="popup-content">
             <div class="popup-header">
@@ -675,7 +656,6 @@
                     style="width: 32px; height: 32px; font-size: 16px;">✕</button>
             </div>
             <div class="popup-body">
-                <!-- Quick Terminal Command -->
                 <div class="popup-section">
                     <h3>📋 Quick Terminal Command</h3>
                     <div class="deploy-command">
@@ -684,7 +664,6 @@
                     </div>
                 </div>
 
-                <!-- Deployment Options -->
                 <div class="popup-section">
                     <h3>☁️ Deploy to Cloud</h3>
                     <div class="deploy-options">
@@ -696,7 +675,6 @@
                         </button>
                     </div>
 
-                    <!-- DigitalOcean Python Script Info -->
                     <div class="info-box" id="doInfo" style="display: none;">
                         <i class="fas fa-info-circle"></i>
                         <strong>DigitalOcean Droplet Creator</strong><br>
@@ -720,7 +698,6 @@
                     </div>
                 </div>
 
-                <!-- Info about deployment -->
                 <div class="info-box">
                     <i class="fas fa-lightbulb"></i>
                     <strong>Quick Deploy Tips:</strong>
@@ -734,16 +711,13 @@
         </div>
     </div>
 
-    <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
 
-    <!-- Artalk -->
     <link href="https://unpkg.com/artalk@2.8.6/dist/Artalk.css" rel="stylesheet">
     <script src="https://unpkg.com/artalk@2.8.6/dist/Artalk.js"></script>
 
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -779,37 +753,55 @@
             scriptName = fullName.replace('.sh', '');
         }
 
-        // Set dynamic page title
-        document.title = !urlParams.has('url') ? 'Sh' : `${scriptName}.sh`;
+        // ✅ FIXED: Set dynamic page title from the actual .sh filename
+        function setTitleFromShUrl(rawUrl, fallbackTitle = 'Sh') {
+            try {
+                const parsed = new URL(rawUrl, window.location.href);
+                const cleanPath = parsed.pathname.split('/').filter(Boolean).pop() || '';
+                const decodedName = decodeURIComponent(cleanPath);
 
-        // Update displays
+                if (/\.sh$/i.test(decodedName)) {
+                    document.title = decodedName;
+                    return decodedName;
+                }
+            } catch {
+                const stripped = String(rawUrl || '').split(/[?#]/)[0];
+                const fallbackName = decodeURIComponent(stripped.split('/').pop() || '');
+                if (/\.sh$/i.test(fallbackName)) {
+                    document.title = fallbackName;
+                    return fallbackName;
+                }
+            }
+
+            document.title = fallbackTitle;
+            return null;
+        }
+
+        // ✅ FIXED: Apply title on initial load
+        setTitleFromShUrl(scriptUrl);
+
         subdomainDisplay.textContent = `${scriptName}.yourdomain.com`;
 
-        // Set quick command
         if (scriptUrl) {
             quickCommand.textContent = `curl -o "${scriptName}.sh" "${scriptUrl}" && chmod +x "${scriptName}.sh" && sudo ./"${scriptName}.sh"`;
         } else {
             quickCommand.textContent = '# No script selected';
         }
 
-        // Resizer variables
         let isResizing = false;
         let startY = 0;
         let startHeight = 0;
 
-        // Show comments button if &e=1 is present OR if we're on the main domain without any script
         if (currentUrl.includes('&e=1') || currentUrl.includes('?e=1') || !urlParams.has('url')) {
             toggleCommentsBtn.style.display = 'flex';
         }
 
-        // Show play button only if there's a script URL
         if (currentUrl.includes('&e=1') || currentUrl.includes('?e=1') || !urlParams.has('url')) {
             playBtn.style.display = 'flex';
         } else {
             playBtn.style.display = 'none';
         }
 
-        // Info button visibility
         const infoBtn = document.getElementById('infoBtn');
         if (currentUrl.includes('&e=1') || currentUrl.includes('?e=1') || !urlParams.has('url')) {
             infoBtn.style.display = 'flex';
@@ -817,14 +809,12 @@
             infoBtn.style.display = 'none';
         }
 
-
         if (enablePanel) {
             initializePanel();
         } else {
             document.getElementById('togglePanelBtn').style.display = 'none';
         }
 
-        // Resizer functionality
         resizer.addEventListener('mousedown', initResize);
         resizer.addEventListener('touchstart', initResize);
 
@@ -839,7 +829,6 @@
             document.addEventListener('mouseup', stopResize);
             document.addEventListener('touchend', stopResize);
 
-            // Add cursor style
             document.body.style.cursor = 'row-resize';
         }
 
@@ -847,7 +836,7 @@
             if (!isResizing) return;
 
             const currentY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
-            const deltaY = startY - currentY; // Invert so dragging down increases height
+            const deltaY = startY - currentY;
             const newHeight = Math.min(
                 Math.max(startHeight + deltaY, 100),
                 window.innerHeight * 0.8
@@ -870,7 +859,6 @@
                 commentsContainer.classList.remove('hidden');
                 toggleCommentsBtn.classList.add('active');
 
-                // Initialize Artalk if not already done
                 if (!artalkInstance) {
                     initArtalk();
                 }
@@ -923,7 +911,7 @@
                                 <img src="https://addons.mozilla.org/user-media/addon_icons/2942/2942544-64.png?modified=94fdaa18" width="16" height="16" style="border-radius: 4px;" alt="DeepSeek in Sidebar" title="DeepSeek in Sidebar">
                             </a>
                             <a href="https://addons.mozilla.org/en-GB/firefox/addon/chatgpt-in-sidebar/" target="_blank" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
-                                <img src="https://addons.mozilla.org/user-media/addon_icons/2824/2824957-64.png?modified=ccf4851f" width="16" height="16" style="border-radius: 4px;" alt="ChatGPT in Sidebar" title="ChatGPT in Sidebar">
+                                <img href="https://addons.mozilla.org/user-media/addon_icons/2824/2824957-64.png?modified=ccf4851f" width="16" height="16" style="border-radius: 4px;" alt="ChatGPT in Sidebar" title="ChatGPT in Sidebar">
                             </a>
                         </div>
                     </div>
@@ -949,7 +937,6 @@
             }
         }
 
-        // Popup functions
         function togglePopup() {
             if (popupOverlay.classList.contains('active')) {
                 popupOverlay.classList.remove('active');
@@ -967,7 +954,6 @@
             });
         }
 
-        // App Info Popup functions
         function toggleAppInfoPopup() {
             const infoPopup = document.getElementById('appInfoPopupOverlay');
             const infoBtn = document.getElementById('infoBtn');
@@ -980,17 +966,14 @@
             }
         }
 
-        // Add event listener for app info button
         document.getElementById('infoBtn').addEventListener('click', toggleAppInfoPopup);
 
-        // Close popup when clicking overlay
         document.getElementById('appInfoPopupOverlay').addEventListener('click', function (e) {
             if (e.target === this) {
                 toggleAppInfoPopup();
             }
         });
 
-        // Close popup with Escape key
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 const infoPopup = document.getElementById('appInfoPopupOverlay');
@@ -1002,7 +985,6 @@
 
         function deployDigitalOcean() {
             doInfo.style.display = 'block';
-            // Scroll to the info
             doInfo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
@@ -1013,7 +995,6 @@
         function runDigitalOceanScript() {
             showToast('🚀 Opening DigitalOcean droplet creator...');
 
-            // For demo, open DigitalOcean console
             setTimeout(() => {
                 window.open('https://cloud.digitalocean.com/droplets/new', '_blank');
                 showToast('✅ Opened DigitalOcean console');
@@ -1151,8 +1132,10 @@
                 return;
             }
 
+            // ✅ FIXED: Keep the title in sync if the script URL ever changes dynamically
+            setTitleFromShUrl(scriptUrl);
+
             try {
-                // Add cache buster to URL
                 const cacheBuster = `&_=${Date.now()}`;
                 const urlWithCache = scriptUrl.includes('?')
                     ? `${scriptUrl}${cacheBuster}`
@@ -1292,21 +1275,18 @@ The diff will be automatically applied by Sh.`;
             setTimeout(processChunk, 10);
         }
 
-        // Event listeners
         document.getElementById('downloadBtn').addEventListener('click', downloadScript);
         document.getElementById('copyBtn').addEventListener('click', copyScript);
         document.getElementById('togglePanelBtn').addEventListener('click', togglePanel);
         if (toggleCommentsBtn) toggleCommentsBtn.addEventListener('click', toggleComments);
         if (playBtn) playBtn.addEventListener('click', togglePopup);
 
-        // Close popup when clicking overlay (but not content)
         popupOverlay.addEventListener('click', function (e) {
             if (e.target === popupOverlay) {
                 togglePopup();
             }
         });
 
-        // Start loading
         loadScript();
     </script>
 </body>
