@@ -1,10 +1,10 @@
-# sh
+# shviewer
 
-This is a github repo on https://github.com/igiteam/sh
+This is a github repo on https://github.com/igiteam/shviewer
 
 THIS ESSENTALLY TWO APPS IN ONE FOLDER STRUCTURE:
 
-SH -> igiteam.github.io/sh
+SH -> igiteam.github.io/shshviewer
 bash script viewer
 
 ---
